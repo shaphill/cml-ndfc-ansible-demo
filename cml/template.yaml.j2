@@ -1,0 +1,620 @@
+lab:
+  description: Example VXLAN EVPN fabric for NDFC simulation
+  notes: ''
+  title: Example NDFC VXLAN Fabric
+  version: 0.2.0
+links:
+  - id: l0
+    n1: n0
+    n2: n4
+    i1: i2
+    i2: i2
+    label: leaf 101-Ethernet1/1<->spine 201-Ethernet1/1
+  - id: l1
+    n1: n0
+    n2: n5
+    i1: i3
+    i2: i2
+    label: leaf 101-Ethernet1/2<->spine 202-Ethernet1/1
+  - id: l2
+    n1: n1
+    n2: n4
+    i1: i2
+    i2: i3
+    label: leaf 102-Ethernet1/1<->spine 201-Ethernet1/2
+  - id: l3
+    n1: n1
+    n2: n5
+    i1: i3
+    i2: i3
+    label: leaf 102-Ethernet1/2<->spine 202-Ethernet1/2
+  - id: l4
+    n1: n2
+    n2: n4
+    i1: i2
+    i2: i4
+    label: leaf 103-Ethernet1/1<->spine 201-Ethernet1/3
+  - id: l5
+    n1: n2
+    n2: n5
+    i1: i3
+    i2: i4
+    label: leaf 103-Ethernet1/2<->spine 202-Ethernet1/3
+  - id: l6
+    n1: n3
+    n2: n4
+    i1: i2
+    i2: i5
+    label: leaf 104-Ethernet1/1<->spine 201-Ethernet1/4
+  - id: l7
+    n1: n3
+    n2: n5
+    i1: i3
+    i2: i5
+    label: leaf 104-Ethernet1/2<->spine 202-Ethernet1/4
+  - id: l8
+    n1: n7
+    n2: n6
+    i1: i0
+    i2: i0
+    label: mgmt-port0<->ext-conn-0-port
+  - id: l9
+    n1: n4
+    n2: n7
+    i1: i1
+    i2: i1
+    label: spine 201-mgmt0<->mgmt-port1
+  - id: l10
+    n1: n5
+    n2: n7
+    i1: i1
+    i2: i2
+    label: spine 202-mgmt0<->mgmt-port2
+  - id: l11
+    n1: n0
+    n2: n7
+    i1: i1
+    i2: i3
+    label: leaf 101-mgmt0<->mgmt-port3
+  - id: l12
+    n1: n1
+    n2: n7
+    i1: i1
+    i2: i4
+    label: leaf 102-mgmt0<->mgmt-port4
+  - id: l13
+    n1: n2
+    n2: n7
+    i1: i1
+    i2: i5
+    label: leaf 103-mgmt0<->mgmt-port5
+  - id: l14
+    n1: n3
+    n2: n7
+    i1: i1
+    i2: i6
+    label: leaf 104-mgmt0<->mgmt-port6
+  - id: l15
+    n1: n8
+    n2: n2
+    i1: i0
+    i2: i4
+    label: 192.168.1.150-eth0<->leaf 103-Ethernet1/3
+  - id: l16
+    n1: n9
+    n2: n3
+    i1: i0
+    i2: i4
+    label: 192.168.2.150-eth0<->leaf 104-Ethernet1/3
+nodes:
+  - boot_disk_size: null
+    configuration: |-
+      hostname inserthostname-here
+      # workaround for booting to loader> prompt
+      echo 'from cli import cli' > set_boot.py
+      echo 'import json' >> set_boot.py
+      echo 'import os' >> set_boot.py
+      echo 'import time' >> set_boot.py
+      echo 'bootimage = json.loads(cli("show version | json"))["kick_file_name"]' >> set_boot.py
+      echo 'set_boot = cli("conf t ; boot nxos {} ; no event manager applet BOOTCONFIG".format(bootimage))' >> set_boot.py
+      echo 'i = 0' >> set_boot.py
+      echo 'while i < 10:' >> set_boot.py
+      echo '    try:' >> set_boot.py
+      echo '        save_config = cli("copy running-config startup-config")' >> set_boot.py
+      echo '        break' >> set_boot.py
+      echo '    except Exception:' >> set_boot.py
+      echo '        i += 1' >> set_boot.py
+      echo '        time.sleep(1)' >> set_boot.py
+      echo 'os.remove("/bootflash/set_boot.py")' >> set_boot.py
+      event manager applet BOOTCONFIG
+       event syslog pattern "Configured from vty"
+       action 1.0 cli python bootflash:set_boot.py
+      # minimum needed config to login
+      no password strength-check
+      username admin role network-admin
+      username admin password {{ switch_password }} role network-admin
+      username cisco role network-admin
+      username cisco password cisco role network-admin
+      conf t
+      hostname leaf-101
+      int mgmt0
+      ip address {{ leaf_101_ip }}
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n0
+    image_definition: null
+    label: leaf 101
+    node_definition: nxosv9000
+    ram: null
+    tags: []
+    x: -480
+    y: 120
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: mgmt0
+        slot: 0
+        type: physical
+      - id: i2
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i3
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i4
+        label: Ethernet1/3
+        slot: 3
+        type: physical
+  - boot_disk_size: null
+    configuration: |-
+      hostname inserthostname-here
+      # workaround for booting to loader> prompt
+      echo 'from cli import cli' > set_boot.py
+      echo 'import json' >> set_boot.py
+      echo 'import os' >> set_boot.py
+      echo 'import time' >> set_boot.py
+      echo 'bootimage = json.loads(cli("show version | json"))["kick_file_name"]' >> set_boot.py
+      echo 'set_boot = cli("conf t ; boot nxos {} ; no event manager applet BOOTCONFIG".format(bootimage))' >> set_boot.py
+      echo 'i = 0' >> set_boot.py
+      echo 'while i < 10:' >> set_boot.py
+      echo '    try:' >> set_boot.py
+      echo '        save_config = cli("copy running-config startup-config")' >> set_boot.py
+      echo '        break' >> set_boot.py
+      echo '    except Exception:' >> set_boot.py
+      echo '        i += 1' >> set_boot.py
+      echo '        time.sleep(1)' >> set_boot.py
+      echo 'os.remove("/bootflash/set_boot.py")' >> set_boot.py
+      event manager applet BOOTCONFIG
+       event syslog pattern "Configured from vty"
+       action 1.0 cli python bootflash:set_boot.py
+      # minimum needed config to login
+      no password strength-check
+      username admin role network-admin
+      username admin password {{ switch_password }} role network-admin
+      username cisco role network-admin
+      username cisco password cisco role network-admin
+      conf t
+      hostname leaf-102
+      int mgmt0
+      ip address {{ leaf_102_ip }}
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n1
+    image_definition: null
+    label: leaf 102
+    node_definition: nxosv9000
+    ram: null
+    tags: []
+    x: -320
+    y: 120
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: mgmt0
+        slot: 0
+        type: physical
+      - id: i2
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i3
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i4
+        label: Ethernet1/3
+        slot: 3
+        type: physical
+  - boot_disk_size: null
+    configuration: |-
+      hostname inserthostname-here
+      # workaround for booting to loader> prompt
+      echo 'from cli import cli' > set_boot.py
+      echo 'import json' >> set_boot.py
+      echo 'import os' >> set_boot.py
+      echo 'import time' >> set_boot.py
+      echo 'bootimage = json.loads(cli("show version | json"))["kick_file_name"]' >> set_boot.py
+      echo 'set_boot = cli("conf t ; boot nxos {} ; no event manager applet BOOTCONFIG".format(bootimage))' >> set_boot.py
+      echo 'i = 0' >> set_boot.py
+      echo 'while i < 10:' >> set_boot.py
+      echo '    try:' >> set_boot.py
+      echo '        save_config = cli("copy running-config startup-config")' >> set_boot.py
+      echo '        break' >> set_boot.py
+      echo '    except Exception:' >> set_boot.py
+      echo '        i += 1' >> set_boot.py
+      echo '        time.sleep(1)' >> set_boot.py
+      echo 'os.remove("/bootflash/set_boot.py")' >> set_boot.py
+      event manager applet BOOTCONFIG
+       event syslog pattern "Configured from vty"
+       action 1.0 cli python bootflash:set_boot.py
+      # minimum needed config to login
+      no password strength-check
+      username admin role network-admin
+      username admin password {{ switch_password }} role network-admin
+      username cisco role network-admin
+      username cisco password cisco role network-admin
+      conf t
+      hostname leaf-103
+      int mgmt0
+      ip address {{ leaf_103_ip }}
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n2
+    image_definition: null
+    label: leaf 103
+    node_definition: nxosv9000
+    ram: null
+    tags: []
+    x: -160
+    y: 120
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: mgmt0
+        slot: 0
+        type: physical
+      - id: i2
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i3
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i4
+        label: Ethernet1/3
+        slot: 3
+        type: physical
+  - boot_disk_size: null
+    configuration: |-
+      hostname inserthostname-here
+      # workaround for booting to loader> prompt
+      echo 'from cli import cli' > set_boot.py
+      echo 'import json' >> set_boot.py
+      echo 'import os' >> set_boot.py
+      echo 'import time' >> set_boot.py
+      echo 'bootimage = json.loads(cli("show version | json"))["kick_file_name"]' >> set_boot.py
+      echo 'set_boot = cli("conf t ; boot nxos {} ; no event manager applet BOOTCONFIG".format(bootimage))' >> set_boot.py
+      echo 'i = 0' >> set_boot.py
+      echo 'while i < 10:' >> set_boot.py
+      echo '    try:' >> set_boot.py
+      echo '        save_config = cli("copy running-config startup-config")' >> set_boot.py
+      echo '        break' >> set_boot.py
+      echo '    except Exception:' >> set_boot.py
+      echo '        i += 1' >> set_boot.py
+      echo '        time.sleep(1)' >> set_boot.py
+      echo 'os.remove("/bootflash/set_boot.py")' >> set_boot.py
+      event manager applet BOOTCONFIG
+       event syslog pattern "Configured from vty"
+       action 1.0 cli python bootflash:set_boot.py
+      # minimum needed config to login
+      no password strength-check
+      username admin role network-admin
+      username admin password {{ switch_password }} role network-admin
+      username cisco role network-admin
+      username cisco password cisco role network-admin
+      conf t
+      hostname leaf-104
+      int mgmt0
+      ip address {{ leaf_104_ip }}
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n3
+    image_definition: null
+    label: leaf 104
+    node_definition: nxosv9000
+    ram: null
+    tags: []
+    x: 0
+    y: 120
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: mgmt0
+        slot: 0
+        type: physical
+      - id: i2
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i3
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i4
+        label: Ethernet1/3
+        slot: 3
+        type: physical
+  - boot_disk_size: null
+    configuration: |-
+      hostname inserthostname-here
+      # workaround for booting to loader> prompt
+      echo 'from cli import cli' > set_boot.py
+      echo 'import json' >> set_boot.py
+      echo 'import os' >> set_boot.py
+      echo 'import time' >> set_boot.py
+      echo 'bootimage = json.loads(cli("show version | json"))["kick_file_name"]' >> set_boot.py
+      echo 'set_boot = cli("conf t ; boot nxos {} ; no event manager applet BOOTCONFIG".format(bootimage))' >> set_boot.py
+      echo 'i = 0' >> set_boot.py
+      echo 'while i < 10:' >> set_boot.py
+      echo '    try:' >> set_boot.py
+      echo '        save_config = cli("copy running-config startup-config")' >> set_boot.py
+      echo '        break' >> set_boot.py
+      echo '    except Exception:' >> set_boot.py
+      echo '        i += 1' >> set_boot.py
+      echo '        time.sleep(1)' >> set_boot.py
+      echo 'os.remove("/bootflash/set_boot.py")' >> set_boot.py
+      event manager applet BOOTCONFIG
+       event syslog pattern "Configured from vty"
+       action 1.0 cli python bootflash:set_boot.py
+      # minimum needed config to login
+      no password strength-check
+      username admin role network-admin
+      username admin password {{ switch_password }} role network-admin
+      username cisco role network-admin
+      username cisco password cisco role network-admin
+      conf t
+      hostname spine-201
+      int mgmt0
+      ip address {{ spine_201_ip }}
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n4
+    image_definition: null
+    label: spine 201
+    node_definition: nxosv9000
+    ram: null
+    tags: []
+    x: -360
+    y: -40
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: mgmt0
+        slot: 0
+        type: physical
+      - id: i2
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i3
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i4
+        label: Ethernet1/3
+        slot: 3
+        type: physical
+      - id: i5
+        label: Ethernet1/4
+        slot: 4
+        type: physical
+  - boot_disk_size: null
+    configuration: |-
+      hostname inserthostname-here
+      # workaround for booting to loader> prompt
+      echo 'from cli import cli' > set_boot.py
+      echo 'import json' >> set_boot.py
+      echo 'import os' >> set_boot.py
+      echo 'import time' >> set_boot.py
+      echo 'bootimage = json.loads(cli("show version | json"))["kick_file_name"]' >> set_boot.py
+      echo 'set_boot = cli("conf t ; boot nxos {} ; no event manager applet BOOTCONFIG".format(bootimage))' >> set_boot.py
+      echo 'i = 0' >> set_boot.py
+      echo 'while i < 10:' >> set_boot.py
+      echo '    try:' >> set_boot.py
+      echo '        save_config = cli("copy running-config startup-config")' >> set_boot.py
+      echo '        break' >> set_boot.py
+      echo '    except Exception:' >> set_boot.py
+      echo '        i += 1' >> set_boot.py
+      echo '        time.sleep(1)' >> set_boot.py
+      echo 'os.remove("/bootflash/set_boot.py")' >> set_boot.py
+      event manager applet BOOTCONFIG
+       event syslog pattern "Configured from vty"
+       action 1.0 cli python bootflash:set_boot.py
+      # minimum needed config to login
+      no password strength-check
+      username admin role network-admin
+      username admin password {{ switch_password }} role network-admin
+      username cisco role network-admin
+      username cisco password cisco role network-admin
+      conf t
+      hostname spine-202
+      int mgmt0
+      ip address {{ spine_202_ip }}
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n5
+    image_definition: null
+    label: spine 202
+    node_definition: nxosv9000
+    ram: null
+    tags: []
+    x: -120
+    y: -40
+    interfaces:
+      - id: i0
+        label: Loopback0
+        type: loopback
+      - id: i1
+        label: mgmt0
+        slot: 0
+        type: physical
+      - id: i2
+        label: Ethernet1/1
+        slot: 1
+        type: physical
+      - id: i3
+        label: Ethernet1/2
+        slot: 2
+        type: physical
+      - id: i4
+        label: Ethernet1/3
+        slot: 3
+        type: physical
+      - id: i5
+        label: Ethernet1/4
+        slot: 4
+        type: physical
+  - boot_disk_size: null
+    configuration: "{{ bridge }}"
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n6
+    image_definition: null
+    label: ext-conn-0
+    node_definition: external_connector
+    ram: null
+    tags: []
+    x: -400
+    y: -160
+    interfaces:
+      - id: i0
+        label: port
+        slot: 0
+        type: physical
+  - boot_disk_size: null
+    configuration: ums-15ea0d63-d9
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: true
+    id: n7
+    image_definition: null
+    label: mgmt
+    node_definition: unmanaged_switch
+    ram: null
+    tags: []
+    x: -240
+    y: -160
+    interfaces:
+      - id: i0
+        label: port0
+        slot: 0
+        type: physical
+      - id: i1
+        label: port1
+        slot: 1
+        type: physical
+      - id: i2
+        label: port2
+        slot: 2
+        type: physical
+      - id: i3
+        label: port3
+        slot: 3
+        type: physical
+      - id: i4
+        label: port4
+        slot: 4
+        type: physical
+      - id: i5
+        label: port5
+        slot: 5
+        type: physical
+      - id: i6
+        label: port6
+        slot: 6
+        type: physical
+      - id: i7
+        label: port7
+        slot: 7
+        type: physical
+  - boot_disk_size: null
+    configuration: |-
+      # this is a shell script which will be sourced at boot
+      hostname inserthostname-here
+      # configurable user account
+      USERNAME=cisco
+      PASSWORD=cisco
+      sudo ifconfig eth0 "{{ host_1_ip }}" netmask 255.255.255.0
+      sudo route add default gw "{{ host_1_gw }}" eth0
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n8
+    image_definition: null
+    label: 192.168.1.150
+    node_definition: desktop
+    ram: null
+    tags: []
+    x: -160
+    y: 280
+    interfaces:
+      - id: i0
+        label: eth0
+        slot: 0
+        type: physical
+  - boot_disk_size: null
+    configuration: |-
+      # this is a shell script which will be sourced at boot
+      hostname inserthostname-here
+      # configurable user account
+      USERNAME=cisco
+      PASSWORD=cisco
+      sudo ifconfig eth0 "{{ host_2_ip }}" netmask 255.255.255.0
+      sudo route add default gw "{{ host_2_gw }}" eth0
+    cpu_limit: null
+    cpus: null
+    data_volume: null
+    hide_links: false
+    id: n9
+    image_definition: null
+    label: 192.168.2.150
+    node_definition: desktop
+    ram: null
+    tags: []
+    x: 0
+    y: 280
+    interfaces:
+      - id: i0
+        label: eth0
+        slot: 0
+        type: physical
+annotations: []

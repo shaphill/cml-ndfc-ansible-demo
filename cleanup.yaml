@@ -1,0 +1,42 @@
+---
+- hosts: ndfc1
+  gather_facts: false
+
+  vars_files: 
+    - vars.yaml
+
+  tasks:
+    - name: Delete networks
+      cisco.dcnm.dcnm_network:
+        state: deleted
+        fabric: "{{ fabric }}"
+        config:
+          - net_name: "{{ item.name }}"
+            vrf_name: "{{ item.vrf }}"
+            net_id: "{{ item.id }}"
+            vlan_id: "{{ item.vlan }}"
+            gw_ip_subnet: "{{ item.gateway }}"
+      loop: "{{ networks }}"
+
+    - name: Delete VRF
+      cisco.dcnm.dcnm_vrf:
+        fabric: "{{ fabric }}"
+        config:
+          - vrf_name: "{{ vrf.name }}"
+            vrf_id: "{{ vrf.id }}"
+            vlan_id: "{{ vrf.vlan }}"
+        state: deleted
+
+    - name: Delete switches from fabric
+      cisco.dcnm.dcnm_inventory:
+        fabric: "{{ fabric }}"
+        state: deleted
+
+    - name: Delete CML Lab
+      cisco.cml.cml_lab:
+        host: "{{ cml_host }}"
+        user: "{{ cml_username }}"
+        password: "{{ cml_password }}"
+        lab: "{{ cml_lab }}"
+        file: ../cml/topology.yaml
+        state: absent

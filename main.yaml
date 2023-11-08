@@ -1,0 +1,9 @@
+--- 
+- name: Deploy CML example NDFC lab topology
+  import_playbook: cml/cml.yaml
+
+- name: Onboard CML devices to NDFC VXLAN EVPN Fabric
+  import_playbook: ndfc/onboard.yaml
+
+- name: Deploy network configuration to NDFC
+  import_playbook: ndfc/networking.yaml

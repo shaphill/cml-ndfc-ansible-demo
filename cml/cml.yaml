@@ -1,0 +1,25 @@
+---
+- name: Deploy CML Example NDFC VXLAN fabric
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars_files:
+  - ../vars.yaml
+
+  tasks:
+    - name: Replace values in topology file
+      ansible.builtin.template:
+        src: template.yaml.j2
+        dest: topology.yaml
+        
+
+    - name: Upload lab
+      cisco.cml.cml_lab:
+        host: "{{ cml_host }}"
+        user: "{{ cml_username }}"
+        password: "{{ cml_password }}"
+        lab: "{{ cml_lab }}"
+        file: topology.yaml
+        state: started
+        

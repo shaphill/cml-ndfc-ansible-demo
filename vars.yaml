@@ -1,0 +1,53 @@
+### CML Variables ###
+cml_host: CHANGE
+cml_username: CHANGE
+cml_password: CHANGE
+cml_lab_file: topology.yaml
+cml_lab: Example NDFC VXLAN Fabric
+
+### Topology file variables ###
+switch_username: CHANGE
+switch_password: CHANGE
+bridge: bridge1
+spine_201_ip: 10.0.223.185/24
+spine_202_ip: 10.0.223.186/24
+leaf_101_ip: 10.0.223.187/24
+leaf_102_ip: 10.0.223.188/24
+leaf_103_ip: 10.0.223.189/24
+leaf_104_ip: 10.0.223.190/24
+host_1_ip: 192.168.1.150
+host_1_gw: 192.168.1.1
+host_2_ip: 192.168.2.150
+host_2_gw: 192.168.2.1
+
+### NDFC Variables ###
+fabric: FABRIC
+
+vrf:
+  name: v1
+  id: 100
+  vlan: 100
+
+networks:
+  - name: "192_168_1"
+    id: 1000
+    vlan: 1000
+    gateway: 192.168.1.1/24
+    vrf: v1
+    switch: 10.0.223.189
+    port: Ethernet1/3
+  - name: "192_168_2"
+    id: 2000
+    vlan: 2000
+    gateway: 192.168.2.1/24
+    vrf: v1
+    switch: 10.0.223.190
+    port: Ethernet1/3
+
+interfaces:
+  - port: Ethernet1/3
+    vlan: 1000
+    switch: "10.0.223.189"
+  - port: Ethernet1/3
+    vlan: 2000
+    switch: "10.0.223.190"

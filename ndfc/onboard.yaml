@@ -1,0 +1,59 @@
+---
+- name: Inventory switches to NDFC
+  hosts: ndfc1
+  gather_facts: false
+
+  vars_files:
+    - ../vars.yaml
+  vars:
+    ndfc: &ndfc
+      fabric: "{{ fabric }}"
+      state: merged
+
+  tasks:
+    - name: Add switches to fabric
+      cisco.dcnm.dcnm_inventory:
+        <<: *ndfc
+        config:
+        - seed_ip: "{{ spine_201_ip.split('/')[0] }}"
+          auth_proto: MD5
+          user_name: "{{ switch_username }}"
+          password: "{{ switch_password }}"
+          max_hops: 0
+          role: border_gateway_spine
+          preserve_config: false
+        - seed_ip: "{{ spine_202_ip.split('/')[0] }}"
+          auth_proto: MD5
+          user_name: "{{ switch_username }}"
+          password: "{{ switch_password }}"
+          max_hops: 0
+          role: spine
+          preserve_config: false
+        - seed_ip: "{{ leaf_101_ip.split('/')[0] }}"
+          auth_proto: MD5
+          user_name: "{{ switch_username }}"
+          password: "{{ switch_password }}"
+          max_hops: 0
+          role: leaf
+          preserve_config: false
+        - seed_ip: "{{ leaf_102_ip.split('/')[0] }}"
+          auth_proto: MD5
+          user_name: "{{ switch_username }}"
+          password: "{{ switch_password }}"
+          max_hops: 0
+          role: leaf
+          preserve_config: false
+        - seed_ip: "{{ leaf_103_ip.split('/')[0] }}"
+          auth_proto: MD5
+          user_name: "{{ switch_username }}"
+          password: "{{ switch_password }}"
+          max_hops: 0
+          role: leaf
+          preserve_config: false
+        - seed_ip: "{{ leaf_104_ip.split('/')[0] }}"
+          auth_proto: MD5
+          user_name: "{{ switch_username }}"
+          password: "{{ switch_password }}"
+          max_hops: 0
+          role: leaf
+          preserve_config: false

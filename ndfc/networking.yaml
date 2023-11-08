@@ -1,0 +1,56 @@
+---
+- name: Deploy VRF, Network, and Interface configuration
+  hosts: ndfc1
+  gather_facts: false
+
+  vars_files:
+    - ../vars.yaml
+  vars:
+    ndfc: &ndfc
+      fabric: "{{ fabric }}"
+      state: merged
+
+  tasks:
+    - name: Add VRF
+      cisco.dcnm.dcnm_vrf:
+        <<: *ndfc
+        config:
+          - vrf_name: "{{ vrf.name }}"
+            vrf_id: "{{ vrf.id }}"
+            vlan_id: "{{ vrf.vlan }}"
+            deploy: true
+
+    - name: Add networks and attach to interfaces
+      cisco.dcnm.dcnm_network:
+        <<: *ndfc
+        config:
+          - net_name: "{{ item.name }}"
+            vrf_name: "{{ item.vrf }}"
+            net_id: "{{ item.id }}"
+            vlan_id: "{{ item.vlan }}"
+            gw_ip_subnet: "{{ item.gateway }}"
+            attach:
+              - ip_address: "{{ item.switch }}"
+                ports: "{{ item.port }}"
+            deploy: true
+      loop: "{{ networks }}"
+
+    - name: Change interface to access mode
+      cisco.dcnm.dcnm_interface:
+        <<: *ndfc
+        config:
+          - name: "{{ interfaces[0].port }}"
+            switch:
+              - "{{ interfaces[0].switch }}"
+            profile:
+              access_vlan: "{{ interfaces[0].vlan }}"
+              mode: access
+            type: eth
+            deploy: true
+          - name: "{{ interfaces[1].port }}"
+            switch:
+              - "{{ interfaces[1].switch }}"
+            profile:
+              mode: access
+              access_vlan: "{{ interfaces[1].vlan }}"
+            type: eth
