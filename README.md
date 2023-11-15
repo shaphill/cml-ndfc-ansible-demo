@@ -75,19 +75,3 @@ To deploy both the CML and NDFC configuration including networking, use
 ```
 ansible-playbook -i inventory.yaml main.yaml
 ```
-To deploy only the CML configuration, use
-```
-ansible-playbook -i inventory.yaml cml/cml.yaml
-```
-To only inventory the devices to NDFC, use
-```
-ansible-playbook -i inventory.yaml ndfc/onboard.yaml
-```
-To only deploy the networking config to NDFC, use
-```
-ansible-playbook -i inventory.yaml ndfc/networking.yaml
-```
-To remove lab from CML, delete networking config and switches from NDFC, use
-```
-ansible-playbook -i inventory.yaml cleanup.yaml
-```
