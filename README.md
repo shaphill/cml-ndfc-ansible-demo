@@ -48,10 +48,10 @@ This demo uses the Ansible CML and DCNM collections to automate the deployment o
 | cisco.dcnm  | 3.4.2   |
 
 ```
-ansible-galaxy install cisco.dcnm --ignore-certs
+ansible-galaxy collection install cisco.dcnm --ignore-certs
 ```
 ```
-ansible-galaxy install cisco.cml --ignore-certs
+ansible-galaxy collection install cisco.cml --ignore-certs
 ```
 Ansible CML Collection requires virl2_client:
 ```
